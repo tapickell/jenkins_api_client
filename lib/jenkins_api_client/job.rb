@@ -71,6 +71,26 @@ module JenkinsApi
         "#<JenkinsApi::Client::Job>"
       end
 
+
+      def create_folder folder_name
+        @logger.info "Creating folder '#{folder_name}'"
+        begin
+          @client.post_request "createItem?name=#{folder_name}&mode=com.cloudbees.hudson.plugins.folder.Folder"
+        rescue => e
+          @loggger.error "Error creating folder #{folder_name} : #{e}"
+        end
+      end
+
+
+      def create_within_folder(folder_name, job_name, xml)
+        @logger.info "Creating job #{folder_name}/#{job_name}"
+        begin
+          @client.post_config("/#{folder_name}/createItem?name=#{form_encode job_name}", xml)
+        rescue => e
+          @loggger.error "Error creating job #{folder_name}/#{job_name} : #{e}"
+        end
+      end
+
       # Create or Update a job with the name specified and the xml given
       #
       # @param job_name [String] the name of the job
@@ -324,7 +344,7 @@ module JenkinsApi
               "#{params[:block_build_when_downstream_building]}")
             xml.blockBuildWhenUpstreamBuilding(
               "#{params[:block_build_when_upstream_building]}")
-            xml.triggers.vector do 
+            xml.triggers.vector do
               if params[:timer]
                 xml.send("hudson.triggers.TimerTrigger") do
                   xml.spec params[:timer]
@@ -360,7 +380,7 @@ module JenkinsApi
             xml.buildWrappers
           end
         end
-        
+
         xml_doc = Nokogiri::XML(builder.to_xml)
         plugin_collection.configure(xml_doc).to_xml
       end
@@ -449,7 +469,7 @@ module JenkinsApi
       # @option artifact_params [Boolean] :default_excludes (false)
       #   exclude defaults automatically
       #
-      # @return [Nokogiri::XML::Builder] 
+      # @return [Nokogiri::XML::Builder]
       #
       def artifact_archiver(artifact_params, xml)
         return xml if artifact_params.nil?
