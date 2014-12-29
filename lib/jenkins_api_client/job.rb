@@ -71,6 +71,14 @@ module JenkinsApi
         "#<JenkinsApi::Client::Job>"
       end
 
+      # Cloudbee Folder Plugin
+      # This will allow adding a folder
+      # and adding a job to a folder
+      #
+      def create_job_with_folder(folder_name, job_name, xml)
+        create_folder(folder_name) unless exists? folder_name
+        create_within_folder(folder_name, job_name, xml)
+      end
 
       def create_folder folder_name
         @logger.info "Creating folder '#{folder_name}'"
@@ -80,7 +88,6 @@ module JenkinsApi
           @logger.info "Error creating folder #{folder_name} : #{e}"
         end
       end
-
 
       def create_within_folder(folder_name, job_name, xml)
         @logger.info "Creating job #{folder_name}/#{job_name}"
