@@ -75,9 +75,9 @@ module JenkinsApi
       def create_folder folder_name
         @logger.info "Creating folder '#{folder_name}'"
         begin
-          @client.post_request "createItem?name=#{folder_name}&mode=com.cloudbees.hudson.plugins.folder.Folder"
+          @client.api_post_request "createItem?name=#{folder_name}&mode=com.cloudbees.hudson.plugins.folder.Folder"
         rescue => e
-          @loggger.error "Error creating folder #{folder_name} : #{e}"
+          @logger.info "Error creating folder #{folder_name} : #{e}"
         end
       end
 
@@ -87,7 +87,7 @@ module JenkinsApi
         begin
           @client.post_config("/#{folder_name}/createItem?name=#{form_encode job_name}", xml)
         rescue => e
-          @loggger.error "Error creating job #{folder_name}/#{job_name} : #{e}"
+          @logger.info "Error creating job #{folder_name}/#{job_name} : #{e}"
         end
       end
 

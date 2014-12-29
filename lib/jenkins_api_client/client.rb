@@ -374,12 +374,14 @@ module JenkinsApi
         # Added form_data default {} instead of nil to help with proxies
         # that barf with empty post
         request = Net::HTTP::Post.new("#{@jenkins_path}#{url_prefix}")
-        @logger.debug "POST #{url_prefix}"
+        @logger.info "POST #{url_prefix}"
+        @logger.info "POST Request: #{request}"
         if @crumbs_enabled
           request[@crumb["crumbRequestField"]] = @crumb["crumb"]
         end
         request.set_form_data(form_data)
         response = make_http_request(request)
+        @logger.info "POST Response: #{response}"
         if raw_response
           handle_exception(response, "raw")
         else
